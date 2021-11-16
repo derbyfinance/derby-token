@@ -5,7 +5,24 @@
     "strict": true,
     "esModuleInterop": true,
     "outDir": "dist",
-    "declaration": true
+    "declaration": true,
+    "resolveJsonModule": true,
+    "baseUrl": "./",
+    "moduleResolution": "node",
+    "paths": {
+      "@typechain/*": [
+        "typechain/*"
+      ],
+      "@artifacts/*": [
+        "artifacts/*"
+      ],
+      "@testhelp/*": [
+        "test/helpers/*"
+      ],
+      "@migrations/*": [
+        "test/migrations/*"
+      ]
+    }
   },
   "include": ["./scripts", "./test", "./typechain"],
   "files": ["./hardhat.config.ts"]
