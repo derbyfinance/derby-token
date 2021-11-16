@@ -8,7 +8,7 @@ import { TestToken } from "@typechain/TestToken";
 import { ERC20 } from "@typechain/ERC20";
 
 // Still have to declare module
-const { BN, constants, expectEvent, expectRevert } = require('@openzeppelin/test-helpers');
+import { BN, constants, expectEvent, expectRevert } from '@openzeppelin/test-helpers';
 const { ZERO_ADDRESS } = constants;
 
 const name = 'TestToken';
@@ -39,29 +39,28 @@ describe("Deploy Token Contract", async () => {
     expect(await testToken.decimals()).to.equal(18);
   });
 
-  describe('_mint', function () {
+  describe('Minting tokens', function () {
     const amount = 100_000;
 
-    it('rejects a null account', async function () {
+    beforeEach('minting', async function () {
+      const logs = await testToken.mint(await recipient.getAddress(), amount);
+    });
+
+    it('increments totalSupply', async function () {
+      const expectedSupply = initialSupply + amount;
+      expect(await testToken.totalSupply()).to.equal(expectedSupply);
+    });
+
+    it('increments recipient balance', async function () {
+      expect(await testToken.balanceOf(await recipient.getAddress())).to.equal(amount);
+    });
+
+    it('cannot mint more then cap', async function () {
       await expectRevert(
-      await testToken.mint(ZERO_ADDRESS, amount), 'ERC20: mint to the zero address',
+        await testToken.mint(await recipient.getAddress(), cap),
+        'ERC20Capped: cap exceeded',
       );
     });
-  
-    describe('for a non zero account', function () {
-      beforeEach('minting', async function () {
-        const  logs  = await testToken.mint(await recipient.getAddress(), amount);
-      });
-  
-      it('increments totalSupply', async function () {
-        const expectedSupply = initialSupply + amount;
-        expect(await testToken.totalSupply()).to.equal(expectedSupply);
-      });
-  
-      it('increments recipient balance', async function () {
-        expect(await testToken.balanceOf(await recipient.getAddress())).to.equal(amount);
-      });
-  
-    });
+
   });
 });
