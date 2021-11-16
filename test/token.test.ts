@@ -8,7 +8,7 @@ import { TestToken } from "@typechain/TestToken";
 import { ERC20 } from "@typechain/ERC20";
 
 // Still have to declare module
-import { BN, constants, expectEvent, expectRevert } from '@openzeppelin/test-helpers';
+const { BN, constants } = require('@openzeppelin/test-helpers');
 const { ZERO_ADDRESS } = constants;
 
 const name = 'TestToken';
@@ -50,17 +50,23 @@ describe("Deploy Token Contract", async () => {
       const expectedSupply = initialSupply + amount;
       expect(await testToken.totalSupply()).to.equal(expectedSupply);
     });
-
+    
     it('increments recipient balance', async function () {
       expect(await testToken.balanceOf(await recipient.getAddress())).to.equal(amount);
     });
-
+    
     it('cannot mint more then cap', async function () {
-      await expectRevert(
-        await testToken.mint(await recipient.getAddress(), cap),
-        'ERC20Capped: cap exceeded',
-      );
-    });
-
+      expect(
+        testToken.mint(await recipient.getAddress(), cap + amount))
+        .to.be.revertedWith("ERC20Capped: cap exceeded"
+        )
+      });
+      
+    it('cannot mint to zero address', async function () {
+      expect(
+        testToken.mint(ZERO_ADDRESS, amount))
+        .to.be.revertedWith("ERC20: mint to the zero address"
+        )
+      });
+    })
   });
-});
