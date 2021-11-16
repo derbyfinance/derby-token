@@ -1,11 +1,9 @@
 import chai, { expect } from "chai";
 import { Signer, Wallet } from "ethers"
 import { ethers, waffle , network} from "hardhat";
-import { Provider } from "web3/providers";
 import { deployTestToken} from "./helpers/deploy";
-import { getUSDCSigner, erc20, formatUSDC, parseUSDC, skipTimeDays } from './helpers/helpers';
+import { erc20, formatUSDC, parseUSDC, skipTimeDays } from './helpers/helpers';
 import { TestToken } from "@typechain/TestToken";
-import { ERC20 } from "@typechain/ERC20";
 
 // Still have to declare module
 const { BN, constants } = require('@openzeppelin/test-helpers');
@@ -18,13 +16,11 @@ const cap = 1_000_000;
 const initialSupply = 0;
 
 describe("Deploy Token Contract", async () => {
-  let testToken: TestToken, owner: Signer, recipient: Signer, USDCSigner: Signer, erc20USDC: ERC20;
+  let testToken: TestToken, owner: Signer, recipient: Signer;
 
   beforeEach(async () => {
     [owner, recipient] = await ethers.getSigners();
     testToken = await deployTestToken(owner, name, symbol, cap);
-
-    // console.log(testToken)
   });
 
   it('has a name', async function () {
@@ -58,15 +54,15 @@ describe("Deploy Token Contract", async () => {
     it('cannot mint more then cap', async function () {
       expect(
         testToken.mint(await recipient.getAddress(), cap + amount))
-        .to.be.revertedWith("ERC20Capped: cap exceeded"
-        )
+        .to.be.revertedWith("ERC20Capped: cap exceeded")
       });
       
     it('cannot mint to zero address', async function () {
       expect(
         testToken.mint(ZERO_ADDRESS, amount))
-        .to.be.revertedWith("ERC20: mint to the zero address"
-        )
+        .to.be.revertedWith("ERC20: mint to the zero address")
       });
     })
+
+    
   });
