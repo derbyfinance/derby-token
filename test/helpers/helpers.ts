@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 require('@ethereum-waffle/compiler');
 const { ethers, network, waffle } = require("hardhat");
 const erc20ABI = require('../../interfaces/erc20.json');
